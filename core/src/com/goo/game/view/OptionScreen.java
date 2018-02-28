@@ -1,0 +1,52 @@
+package com.goo.game.view;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
+
+/**
+ * Created by TIO BIGA on 12/02/2018.
+ */
+
+public class OptionScreen implements Screen {
+
+    private Game game;
+
+    public OptionScreen(Game game) {
+        this.game = game;
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+
+    }
+}

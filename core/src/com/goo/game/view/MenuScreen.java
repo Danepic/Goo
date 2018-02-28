@@ -9,7 +9,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.goo.game.view.world1.AdventureTimeScreen;
 
 /**
@@ -17,12 +21,11 @@ import com.goo.game.view.world1.AdventureTimeScreen;
  */
 public class MenuScreen implements Screen, Input.TextInputListener {
 
-    private Game game;
-
     public MenuScreen(Game game) {
-
         this.game = game;
     }
+
+    private Game game;
 
     private SpriteBatch batch;
     private Texture menu;
@@ -45,6 +48,8 @@ public class MenuScreen implements Screen, Input.TextInputListener {
 
     @Override
     public void show() {
+        Gdx.app.log("GOO: ", "Exibindo Menu");
+
         batch = new SpriteBatch();
         menu = new Texture("components/menu000.png");
         menuEsquerdo = new Texture("components/menu100.png");
@@ -99,10 +104,6 @@ public class MenuScreen implements Screen, Input.TextInputListener {
             }
         }
         batch.end();
-
-
-
-
     }
 
     @Override
