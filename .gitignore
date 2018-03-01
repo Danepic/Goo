@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Built application files
 *.apk
 *.ap_
@@ -30,3 +31,13 @@ proguard/
 
 # Android Studio captures folder
 captures/
+=======
+
+\.idea/Goo\.iml
+
+\.idea/modules\.xml
+
+\.idea/vcs\.xml
+
+\.idea/workspace\.xml
+>>>>>>> Stashed changes
