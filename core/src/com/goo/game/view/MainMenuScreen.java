@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -28,17 +29,20 @@ public class MainMenuScreen implements Screen {
 
     private Stage stage;
 
+    private Image menu;
+    private Image menuMirror;
+    private float speedMenu;
+
+    private Image menuDireito;
+    private Image menuEsquerdo;
     private Image logo;
     private float rotateLogo;
 
-    private ImageButton playButton;
-    private ImageButton playOption;
-    private ImageButton playExit;
-    private ImageButton menu;
-    private ImageButton menuDireito;
-    private ImageButton menuEsquerdo;
+    private Image playButton;
+    private Image playOption;
+    private Image playExit;
 
-    public MainMenuScreen(Game game){
+    public MainMenuScreen(Game game) {
         this.game = game;
     }
 
@@ -52,38 +56,46 @@ public class MainMenuScreen implements Screen {
         int posFinalX = Gdx.graphics.getWidth();
         int posFinalY = Gdx.graphics.getWidth();
 
-        int meioTelaX = Gdx.graphics.getWidth()/2;
-        int meioTelaY = Gdx.graphics.getHeight()/2;
+        int meioTelaX = Gdx.graphics.getWidth() / 2;
+        int meioTelaY = Gdx.graphics.getHeight() / 2;
 
         //Sprite
-        logo = PathUtils.texture("components/logo.png", 185, meioTelaY + 200, 1.70f, 1.70f);
+        logo = PathUtils.image("components/logo.png", 185, meioTelaY + 200, 1.70f, 1.70f);
 
         //Buttons
-        playButton = PathUtils.textureRegion("components/play.png", meioTelaX, meioTelaY);
-        playOption = PathUtils.textureRegion("components/option.png", meioTelaX - 45, 75);
-        playExit = PathUtils.textureRegion("components/exit.png", meioTelaX + 45, 75);
+        playButton = PathUtils.image("components/play.png", meioTelaX-100, meioTelaY, 2, 2);
+        playOption = PathUtils.image("components/option.png", meioTelaX - 100, 75, 2, 2);
+        playExit = PathUtils.image("components/exit.png", meioTelaX + 25, 75, 2, 2);
 
         //Components
-        menu = PathUtils.textureRegion("components/menu000.png", 0, 0);
-        menuDireito = PathUtils.textureRegion("components/menu100.png", 0, 0);
-        menuEsquerdo = PathUtils.textureRegion("components/menu200.png", 0, 0);
+        menu = PathUtils.image("components/menu000.png", 0, 215, 2, 2);
+        menuMirror = PathUtils.image("components/menu000.png", 0, 215, 2, 2);
+        menuEsquerdo = PathUtils.image("components/menu100.png", 258, 430, 1, 0.839f);
+        menuDireito = PathUtils.image("components/menu200.png", 925, 430, 1, 0.839f);
 
         //Stage
+        //Actors
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
+
+        stage.addActor(menuMirror);//MenuAnim - Mirror
+        stage.getActors().get(0).setX(0 - 2400);
+        stage.addActor(menu);//MenuAnim
+        stage.getActors().get(1).setX(0);
+
         stage.addActor(playButton); //Add the button to the stage to perform rendering and take input.
         stage.addActor(playOption); //Add the button to the stage to perform rendering and take input.
         stage.addActor(playExit); //Add the button to the stage to perform rendering and take input.
-        stage.addActor(logo);
-        stage.addActor(menu);
         stage.addActor(menuDireito);
         stage.addActor(menuEsquerdo);
+        stage.addActor(logo);
+
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
         //Eventos
         playButton.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                Gdx.app.log("Ação","Botão 'Play' tocado...");
+                Gdx.app.log("Ação", "Botão 'Play' tocado...");
                 game.setScreen(new AdventureTimeScreen(game));
                 return false;
             }
@@ -92,7 +104,7 @@ public class MainMenuScreen implements Screen {
         playOption.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                Gdx.app.log("Ação","Botão 'Play' tocado...");
+                Gdx.app.log("Ação", "Botão 'Play' tocado...");
                 game.setScreen(new AdventureTimeScreen(game));
                 return false;
             }
@@ -101,7 +113,7 @@ public class MainMenuScreen implements Screen {
         playExit.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                Gdx.app.log("Ação","Saindo do jogo...");
+                Gdx.app.log("Ação", "Saindo do jogo...");
                 Gdx.app.exit();
                 return false;
             }
@@ -110,21 +122,28 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1,1,1,1);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
+        //Definição apartir do delta
         rotateLogo = 100 * delta;
+        speedMenu = 100 * delta;
 
-        stage.getActors().get(3).setOrigin(logo.getImageWidth()/2, logo.getImageHeight()/2);
-        stage.getActors().get(3).rotateBy(rotateLogo);
+        //Efeito de transição do menu
+        stage.getActors().get(0).moveBy(speedMenu, menu.getY());
+        stage.getActors().get(1).moveBy(speedMenu, menu.getY());
+
+        //Rotação do Logo
+        stage.getActors().get(7).setOrigin(logo.getImageWidth() / 2, logo.getImageHeight() / 2);
+        stage.getActors().get(7).rotateBy(rotateLogo);
+
         stage.act(Gdx.graphics.getDeltaTime()); //Perform ui logic
         stage.draw(); //Draw the ui
 
         batch.end();
     }
-
 
 
     @Override

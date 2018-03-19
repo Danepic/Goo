@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class PathUtils {
 
-    public static ImageButton textureRegion(String path, int posx, int posy){
+    public static ImageButton imageButton(String path, int posx, int posy){
 
         Texture button = new Texture(path);
         TextureRegion buttonRegion = new TextureRegion(button);
@@ -26,7 +26,25 @@ public class PathUtils {
 
     }
 
-    public static Image texture(String path, int posx, int posy, float scaleX, float scaleY){
+    public static ImageButton imageButton(String path, int posx, int posy, float scaleX, float scaleY){
+
+        Texture button = new Texture(path);
+        TextureRegion buttonRegion = new TextureRegion(button);
+        TextureRegionDrawable buttonDrawable = new TextureRegionDrawable(buttonRegion);
+
+        Image img = new Image(buttonDrawable);
+        img.setScale(scaleX, scaleY);
+        img.setPosition(posx - button.getWidth()/2, posy - button.getHeight()/2);
+
+        ImageButton imgButton = new ImageButton(img.getDrawable());
+        imgButton.setPosition(posx - button.getWidth()/2, posy - button.getHeight()/2);
+        imgButton.setScale(scaleX, scaleY);
+
+        return imgButton;
+
+    }
+
+    public static Image image(String path, int posx, int posy, float scaleX, float scaleY){
 
         Texture imgTexture = new Texture(path);
         TextureRegion imgRegion = new TextureRegion(imgTexture);
