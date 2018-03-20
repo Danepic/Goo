@@ -17,10 +17,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.utils.PathUtils;
 import com.goo.game.view.world1.AdventureTimeScreen;
 
-/**
- * Created by TIO BIGA on 12/02/2018.
- */
-
 public class MainMenuScreen implements Screen {
 
     private Game game;
@@ -63,7 +59,7 @@ public class MainMenuScreen implements Screen {
         logo = PathUtils.image("components/logo.png", 185, meioTelaY + 200, 1.70f, 1.70f);
 
         //Buttons
-        playButton = PathUtils.image("components/play.png", meioTelaX-100, meioTelaY, 2, 2);
+        playButton = PathUtils.image("components/play.png", meioTelaX - 100, meioTelaY, 2, 2);
         playOption = PathUtils.image("components/option.png", meioTelaX - 100, 75, 2, 2);
         playExit = PathUtils.image("components/exit.png", meioTelaX + 25, 75, 2, 2);
 
@@ -78,7 +74,7 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
 
         stage.addActor(menuMirror);//MenuAnim - Mirror
-        stage.getActors().get(0).setX(0 - 2400);
+        stage.getActors().get(0).setX(0 - 2386);
         stage.addActor(menu);//MenuAnim
         stage.getActors().get(1).setX(0);
 
@@ -129,11 +125,18 @@ public class MainMenuScreen implements Screen {
 
         //Definição apartir do delta
         rotateLogo = 100 * delta;
-        speedMenu = 100 * delta;
+        speedMenu = 150 * delta;
 
         //Efeito de transição do menu
         stage.getActors().get(0).moveBy(speedMenu, menu.getY());
+        if(stage.getActors().get(0).getX() > Gdx.graphics.getWidth()){
+            stage.getActors().get(0).setX(0 - 3486);
+        }
+
         stage.getActors().get(1).moveBy(speedMenu, menu.getY());
+        if(stage.getActors().get(1).getX() > Gdx.graphics.getWidth()){
+            stage.getActors().get(1).setX(0 - 3486);
+        }
 
         //Rotação do Logo
         stage.getActors().get(7).setOrigin(logo.getImageWidth() / 2, logo.getImageHeight() / 2);
