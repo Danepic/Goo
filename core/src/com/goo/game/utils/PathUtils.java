@@ -1,10 +1,12 @@
 package com.goo.game.utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
@@ -64,6 +66,22 @@ public class PathUtils {
         sprite.setPosition(posx, posy);
         sprite.setScale(scale);
         return sprite;
+
+    }
+
+    public static Slider slider(String pathBG, String pathKnob, int posx, int posy, float scaleX, float scaleY){
+
+        Texture sliderBackgorundTex = new Texture(pathBG);
+        Texture sliderKnobTex = new Texture(pathKnob);
+        Slider.SliderStyle ss = new Slider.SliderStyle();
+        ss.background = new TextureRegionDrawable(new TextureRegion(sliderBackgorundTex));
+        ss.knob = new TextureRegionDrawable(new TextureRegion(sliderKnobTex));
+        Slider slider = new Slider(0f, 100f, 1f, false, ss);
+        slider.setWidth(400);
+        slider.setPosition(posx, posy);
+        slider.setScale(scaleX, scaleY);
+
+        return slider;
 
     }
 }

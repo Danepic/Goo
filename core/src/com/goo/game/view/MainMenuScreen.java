@@ -3,27 +3,38 @@ package com.goo.game.view;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.utils.PathUtils;
 import com.goo.game.view.world1.AdventureTimeScreen;
+
+import java.util.Random;
 
 public class MainMenuScreen implements Screen {
 
     private Game game;
 
+    private Float volume;
+
     private SpriteBatch batch;
 
     private Stage stage;
+
+    private Image option;
+    private Slider slider;
+    private Texture sliderBackgorundTex, sliderKnobTex;
 
     private Image menu;
     private Image menuMirror;
@@ -52,7 +63,7 @@ public class MainMenuScreen implements Screen {
         int posFinalX = Gdx.graphics.getWidth();
         int posFinalY = Gdx.graphics.getWidth();
 
-        int meioTelaX = Gdx.graphics.getWidth() / 2;
+        final int meioTelaX = Gdx.graphics.getWidth() / 2;
         int meioTelaY = Gdx.graphics.getHeight() / 2;
 
         //Sprite
@@ -64,8 +75,16 @@ public class MainMenuScreen implements Screen {
         playExit = PathUtils.image("components/exit.png", meioTelaX + 25, 75, 2, 2);
 
         //Components
-        menu = PathUtils.image("components/menu000.png", 0, 215, 2, 2);
-        menuMirror = PathUtils.image("components/menu000.png", 0, 215, 2, 2);
+        Random randomBG = new Random();
+        int randomValue = randomBG.nextInt(3);
+
+        //Options
+        option = PathUtils.image("components/modalOption.png", meioTelaX + 20, meioTelaY, 0.95f, 0.95f);
+        slider = PathUtils.slider("components/sliderTex.png", "components/sliderKnobTex.png",
+                meioTelaX, meioTelaY + 60, 1, 1);
+
+        menu = PathUtils.image("components/menu0" + randomValue + "0.png", 0, 215, 2, 2);
+        menuMirror = PathUtils.image("components/menu0" + randomValue + "0.png", 0, 215, 2, 2);
         menuEsquerdo = PathUtils.image("components/menu100.png", 258, 430, 1, 0.839f);
         menuDireito = PathUtils.image("components/menu200.png", 925, 430, 1, 0.839f);
 
@@ -84,6 +103,11 @@ public class MainMenuScreen implements Screen {
         stage.addActor(menuDireito);
         stage.addActor(menuEsquerdo);
         stage.addActor(logo);
+        stage.addActor(option);
+        stage.addActor(slider);
+
+        stage.getActors().get(8).setVisible(false);
+        stage.getActors().get(9).setVisible(false);
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
@@ -101,7 +125,8 @@ public class MainMenuScreen implements Screen {
             @Override
             public boolean handle(Event event) {
                 Gdx.app.log("Ação", "Botão 'Play' tocado...");
-                game.setScreen(new AdventureTimeScreen(game));
+                stage.getActors().get(8).setVisible(true);
+                stage.getActors().get(9).setVisible(true);
                 return false;
             }
         });
@@ -111,6 +136,15 @@ public class MainMenuScreen implements Screen {
             public boolean handle(Event event) {
                 Gdx.app.log("Ação", "Saindo do jogo...");
                 Gdx.app.exit();
+                return false;
+            }
+        });
+
+        slider.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                volume = slider.getValue();
+                Gdx.app.log("Teste", "VOLUME: " + volume);
                 return false;
             }
         });
@@ -129,13 +163,13 @@ public class MainMenuScreen implements Screen {
 
         //Efeito de transição do menu
         stage.getActors().get(0).moveBy(speedMenu, menu.getY());
-        if(stage.getActors().get(0).getX() > Gdx.graphics.getWidth()){
-            stage.getActors().get(0).setX(0 - 3486);
+        if (stage.getActors().get(0).getX() > Gdx.graphics.getWidth()) {
+            stage.getActors().get(0).setX(0 - 3575);
         }
 
         stage.getActors().get(1).moveBy(speedMenu, menu.getY());
-        if(stage.getActors().get(1).getX() > Gdx.graphics.getWidth()){
-            stage.getActors().get(1).setX(0 - 3486);
+        if (stage.getActors().get(1).getX() > Gdx.graphics.getWidth()) {
+            stage.getActors().get(1).setX(0 - 3575);
         }
 
         //Rotação do Logo
