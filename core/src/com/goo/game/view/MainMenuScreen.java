@@ -2,6 +2,7 @@ package com.goo.game.view;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -32,6 +34,7 @@ import java.util.Random;
 public class MainMenuScreen implements Screen {
 
     private Game game;
+    private Preferences prefs;
 
     private Skin skin;
 
@@ -67,6 +70,9 @@ public class MainMenuScreen implements Screen {
     public void show() {
 
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+
+        //Preferences
+        prefs = Gdx.app.getPreferences("userPref");
 
         //Batch
         batch = new SpriteBatch();
@@ -172,15 +178,25 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-        optionReturn.addListener(new EventListener() {
+        optionReturn.addListener(new ClickListener(){
             @Override
-            public boolean handle(Event event) {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 stage.getActors().get(8).setVisible(false);
                 stage.getActors().get(9).setVisible(false);
                 stage.getActors().get(10).setVisible(false);
                 stage.getActors().get(11).setVisible(false);
                 stage.getActors().get(12).setVisible(false);
-                return false;
+
+                prefs.putString("Language", selectBox.getSelected().toString());
+                prefs.putFloat("Volume", volume);
+                Gdx.app.log("DB", "Configurações gravadas...");
+
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
