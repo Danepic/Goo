@@ -4,16 +4,13 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -21,20 +18,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.utils.PathUtils;
 import com.goo.game.utils.StyleUtils;
-import com.goo.game.view.world1.AdventureTimeScreen;
 
 import java.util.Random;
 
 public class MainMenuScreen implements Screen {
 
     private Game game;
+
     private Preferences prefs;
+
+    private Music bgm;
 
     private Skin skin;
 
@@ -62,6 +58,12 @@ public class MainMenuScreen implements Screen {
     private Image playOption;
     private Image playExit;
 
+    ////////////////////////////////
+    int posFinalX;
+    int posFinalY;
+    int meioTelaX;
+    int meioTelaY;
+
     public MainMenuScreen(Game game) {
         this.game = game;
     }
@@ -78,48 +80,46 @@ public class MainMenuScreen implements Screen {
         batch = new SpriteBatch();
 
         //Var Utils
-        int posFinalX = Gdx.graphics.getWidth();
-        int posFinalY = Gdx.graphics.getWidth();
+        posFinalX = Gdx.graphics.getWidth();
+        posFinalY = Gdx.graphics.getWidth();
 
-        int meioTelaX = Gdx.graphics.getWidth() / 2;
-        int meioTelaY = Gdx.graphics.getHeight() / 2;
+        meioTelaX = Gdx.graphics.getWidth() / 2;
+        meioTelaY = Gdx.graphics.getHeight() / 2;
 
         //Sprite
-        logo = PathUtils.image("components/logo.png", 185, meioTelaY + 200, 1.70f, 1.70f);
+        logo = PathUtils.image("components/logo.png", 185, meioTelaY + 200, 1.70f, 1.70f, true);
 
         //Buttons
-        playButton = PathUtils.image("components/play.png", meioTelaX - 100, meioTelaY, 2, 2);
-        playOption = PathUtils.image("components/option.png", meioTelaX - 100, 75, 2, 2);
-        playExit = PathUtils.image("components/exit.png", meioTelaX + 25, 75, 2, 2);
+        playButton = PathUtils.image("components/play.png", meioTelaX - 100, meioTelaY, 2, 2, true);
+        playOption = PathUtils.image("components/option.png", meioTelaX - 100, 75, 2, 2, true);
+        playExit = PathUtils.image("components/exit.png", meioTelaX + 25, 75, 2, 2, true);
 
         //Components
         Random randomBG = new Random();
         int randomValue = randomBG.nextInt(3);
 
         //Options
-        option = PathUtils.image("components/modalOption.png", meioTelaX + 20, meioTelaY, 0.95f, 0.95f);
+        option = PathUtils.image("components/modalOption.png", meioTelaX + 20, meioTelaY, 0.95f, 0.95f, true);
         slider = PathUtils.slider("components/sliderTex.png", "components/sliderKnobTex.png",
                 meioTelaX, meioTelaY + 60, 1, 1);
         slider.setValue(50);
         final SelectBox selectBox = StyleUtils.selectBoxStyleLanguage(skin, meioTelaX, meioTelaY - 85);
-        optionClose = PathUtils.image("components/fecharOption.png", meioTelaX + 380, 570, 1, 1);
-        optionReturn = PathUtils.image("components/voltarOption.png", meioTelaX , 175, 1, 1);
+        optionClose = PathUtils.image("components/fecharOption.png", meioTelaX + 380, 570, 1, 1, true);
+        optionReturn = PathUtils.image("components/voltarOption.png", meioTelaX , 175, 1, 1, true);
 
-
-
-        menu = PathUtils.image("components/menu0" + randomValue + "0.png", 0, 215, 2, 2);
-        menuMirror = PathUtils.image("components/menu0" + randomValue + "0.png", 0, 215, 2, 2);
-        menuEsquerdo = PathUtils.image("components/menu100.png", 258, 430, 1, 0.839f);
-        menuDireito = PathUtils.image("components/menu200.png", 925, 430, 1, 0.839f);
+        menu = PathUtils.image("components/menu0"+randomValue+"0.png", 0, 215, 2, 2, false);
+        menuMirror = PathUtils.image("components/menu0"+randomValue+"0.png", 0, 215, 2, 2, true);
+        menuEsquerdo = PathUtils.image("components/menu100.png", 258, 430, 1, 0.839f, true);
+        menuDireito = PathUtils.image("components/menu200.png", 925, 430, 1, 0.839f, true);
 
         //Stage
         //Actors
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
 
         stage.addActor(menuMirror);//MenuAnim - Mirror
-        stage.getActors().get(0).setX(0 - 2386);
+        stage.getActors().get(0).setX(-3580);
         stage.addActor(menu);//MenuAnim
-        stage.getActors().get(1).setX(0);
+        stage.getActors().get(1).setX(-1194);
 
         stage.addActor(playButton); //Add the button to the stage to perform rendering and take input.
         stage.addActor(playOption); //Add the button to the stage to perform rendering and take input.
@@ -141,12 +141,20 @@ public class MainMenuScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
+        volume = slider.getValue();
+
+        //BG
+        bgm = Gdx.audio.newMusic(Gdx.files.internal("musics/main_bg.mp3"));
+        bgm.setVolume(volume/100);
+        bgm.setLooping(true);
+        bgm.play();
+
         //Eventos
         playButton.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 Gdx.app.log("Ação", "Botão 'Play' tocado...");
-                game.setScreen(new AdventureTimeScreen(game));
+                game.setScreen(new WorldScreen(game, bgm));
                 return false;
             }
         });
@@ -196,6 +204,7 @@ public class MainMenuScreen implements Screen {
                 prefs.putFloat("Volume", volume);
                 Gdx.app.log("DB", "Configurações gravadas...");
 
+                prefs.flush();
                 super.touchUp(event, x, y, pointer, button);
             }
         });
@@ -213,6 +222,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public boolean handle(Event event) {
                 volume = slider.getValue();
+                bgm.setVolume(volume/100);
                 Gdx.app.log("Teste", "VOLUME: " + volume);
                 return false;
             }
@@ -235,17 +245,21 @@ public class MainMenuScreen implements Screen {
 
         //Definição apartir do delta
         rotateLogo = 100 * delta;
-        speedMenu = 150 * delta;
+        speedMenu = 400 * delta;
 
         //Efeito de transição do menu
         stage.getActors().get(0).moveBy(speedMenu, menu.getY());
         if (stage.getActors().get(0).getX() > Gdx.graphics.getWidth()) {
-            stage.getActors().get(0).setX(0 - 3575);
+            Gdx.app.log("IMG0", ">RESET");
+            stage.getActors().get(1).setX(-1194);
+            stage.getActors().get(0).setX(-3570);
         }
 
         stage.getActors().get(1).moveBy(speedMenu, menu.getY());
         if (stage.getActors().get(1).getX() > Gdx.graphics.getWidth()) {
-            stage.getActors().get(1).setX(0 - 3575);
+            Gdx.app.log("IMG1", ">RESET");
+            stage.getActors().get(0).setX(-1194);
+            stage.getActors().get(1).setX(-3570);
         }
 
         //Rotação do Logo
@@ -281,6 +295,10 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        bgm.dispose();
         stage.dispose();
+        game.dispose();
+        batch.dispose();
+        skin.dispose();
     }
 }

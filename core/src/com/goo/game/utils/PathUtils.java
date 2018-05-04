@@ -46,19 +46,23 @@ public class PathUtils {
 
     }
 
-    public static Image image(String path, int posx, int posy, float scaleX, float scaleY){
+    public static Image image(String path, int posx, int posy, float scaleX, float scaleY, boolean center){
 
         Texture imgTexture = new Texture(path);
         TextureRegion imgRegion = new TextureRegion(imgTexture);
         TextureRegionDrawable imgDrawable = new TextureRegionDrawable(imgRegion);
 
         Image img = new Image(imgDrawable);
-        img.setPosition(posx - imgTexture.getWidth()/2, posy - imgTexture.getHeight()/2);
+
+        if(center){
+            img.setPosition(posx - imgTexture.getWidth()/2, posy - imgTexture.getHeight()/2);
+        }
         img.setScale(scaleX, scaleY);
 
         return img;
 
     }
+
 
     public static Sprite sprite(String path, int posx, int posy, float scale){
 
