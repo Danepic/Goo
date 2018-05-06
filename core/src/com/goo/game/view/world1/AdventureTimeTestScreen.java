@@ -74,7 +74,6 @@ public class AdventureTimeTestScreen implements Screen {
         for (int i = 0; i < finnStance.length; i++){
             finnStance[i] = new Texture("chars/finn/stance"+i+".png");
         }
-
         animation = new Animation<Texture>(0.08f, finnStance);
     }
 

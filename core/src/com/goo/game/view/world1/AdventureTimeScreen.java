@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.goo.game.actors.FinnActor;
 import com.goo.game.utils.PathUtils;
 
 import java.util.Random;
@@ -38,7 +39,6 @@ public class AdventureTimeScreen implements Screen {
 
     private Texture[] finnStance;
     private Animation<Texture> animation;
-    private float tempo;
 
     private Image se;
     private Image var;
@@ -46,9 +46,8 @@ public class AdventureTimeScreen implements Screen {
     private Image result;
     private Image fim;
 
-    public AdventureTimeScreen(Game game, Music bgm) {
+    public AdventureTimeScreen(Game game) {
         this.game = game;
-        this.bgm = bgm;
     }
 
     @Override
@@ -61,6 +60,12 @@ public class AdventureTimeScreen implements Screen {
 
         //Animation
         finnStance = new Texture[11];
+        for (int i = 0; i < finnStance.length; i++){
+            finnStance[i] = new Texture("chars/finn/stance"+i+".png");
+        }
+        animation = new Animation<Texture>(0.08f, finnStance);
+        FinnActor finn = new FinnActor(animation, 225, 300, 100, 100
+        );
 
         //Var Utils
         int posFinalX = Gdx.graphics.getWidth();
@@ -84,6 +89,7 @@ public class AdventureTimeScreen implements Screen {
         //Actors
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
         stage.addActor(bg);
+        stage.addActor(finn);
         stage.addActor(se);
         stage.addActor(var);
         stage.addActor(igual);
@@ -134,8 +140,6 @@ public class AdventureTimeScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        tempo += Gdx.graphics.getDeltaTime();
-
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

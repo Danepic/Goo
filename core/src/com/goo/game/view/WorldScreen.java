@@ -148,7 +148,7 @@ public class WorldScreen implements Screen {
             @Override
             public boolean handle(Event event) {
                 Gdx.app.log("Ação", "Fase 1 selecionada...");
-                game.setScreen(new AdventureTimeScreen(game, bgm));
+                game.setScreen(new AdventureTimeScreen(game));
                 return false;
             }
         });
