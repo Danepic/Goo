@@ -57,11 +57,17 @@ public class WorldScreen implements Screen {
         this.bgm = bgm;
     }
 
+    public WorldScreen(Game game){
+        this.game = game;
+    }
+
     @Override
     public void show() {
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
-        bgm.stop();
+        if(bgm != null){
+            bgm.stop();
+        }
 
         //Preferences
         prefs = Gdx.app.getPreferences("userPref");

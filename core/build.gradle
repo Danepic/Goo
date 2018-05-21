@@ -11,4 +11,5 @@ eclipse.project {
 }
 
 dependencies {
+    compile group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
 }

@@ -4,23 +4,40 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.actors.FinnActor;
+import com.goo.game.components.Component;
+import com.goo.game.enums.StateType;
+import com.goo.game.utils.FontUtils;
+import com.goo.game.utils.NumericInputListenerUtils;
+import com.goo.game.utils.StringInputListenerUtils;
 import com.goo.game.utils.PathUtils;
+import com.goo.game.view.WorldScreen;
+
+import org.hamcrest.CoreMatchers;
 
 import java.util.Random;
+
+import jdk.nashorn.internal.runtime.regexp.RegExpMatcher;
 
 
 public class AdventureTimeScreen implements Screen {
@@ -28,6 +45,8 @@ public class AdventureTimeScreen implements Screen {
     private Game game;
 
     private SpriteBatch batch;
+
+    private NumericInputListenerUtils input;
 
     private Stage stage;
 
@@ -38,13 +57,35 @@ public class AdventureTimeScreen implements Screen {
     private Image bg;
 
     private Texture[] finnStance;
-    private Animation<Texture> animation;
+    private Animation<Texture> finnStanceAnimation;
 
-    private Image se;
-    private Image var;
-    private Image igual;
-    private Image result;
-    private Image fim;
+    private Texture[] finnJump;
+    private Animation<Texture> finnJumpAnimation;
+
+    private Texture[] finnLand;
+    private Animation<Texture> finnLandAnimation;
+
+    private Texture[] finnDancing;
+    private Animation<Texture> finnDancingAnimation;
+
+    private FinnActor finn;
+
+    private Component var;
+    private int valueVar;
+
+    private Image resultPanel;
+    private Label resultPanelLabel;
+
+    private Label attempts;
+    private int currentAttempt;
+    private final int limitAttempt = 3;
+
+    private Image back;
+    private Image forward;
+
+    private Image success;
+    private Image failed;
+    private Image closeButton;
 
     public AdventureTimeScreen(Game game) {
         this.game = game;
@@ -58,17 +99,34 @@ public class AdventureTimeScreen implements Screen {
         //Skin
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
-        //Animation
+        //Input
+        input = new NumericInputListenerUtils();
+
+        //Animation Stance
         finnStance = new Texture[11];
         for (int i = 0; i < finnStance.length; i++){
             finnStance[i] = new Texture("chars/finn/stance"+i+".png");
         }
-        animation = new Animation<Texture>(0.08f, finnStance);
-        FinnActor finn = new FinnActor(animation, 225, 300, 100, 100
-        );
+        finnStanceAnimation = new Animation<Texture>(0.08f, finnStance);
+
+        //Animation Jump
+        finnJump = new Texture[15];
+        for (int i = 0; i < finnJump.length; i++){
+            finnJump[i] = new Texture("chars/finn/jump"+i+".png");
+        }
+        finnJumpAnimation = new Animation<Texture>(0.08f, finnJump);
+
+        //Animation Land
+        finnLand = new Texture[4];
+        for (int i = 0; i < finnLand.length; i++){
+            finnLand[i] = new Texture("chars/finn/land"+i+".png");
+        }
+        finnLandAnimation = new Animation<Texture>(0.02f, finnLand);
+
+        finn = new FinnActor(225, 300, 100, 100, finnStanceAnimation, finnJumpAnimation, finnLandAnimation);
 
         //Var Utils
-        int posFinalX = Gdx.graphics.getWidth();
+        final int posFinalX = Gdx.graphics.getWidth();
         int posFinalY = Gdx.graphics.getWidth();
 
         int meioTelaX = Gdx.graphics.getWidth() / 2;
@@ -80,53 +138,82 @@ public class AdventureTimeScreen implements Screen {
         bg = PathUtils.image("background/01bg.png", 450, 275, 1.40f, 1.40f, true);
 
         //Button
-        se = PathUtils.image("components/elements/se.png", random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), 1, 1, true);
-        var = PathUtils.image("components/elements/var-teste.png", random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), 1, 1, true);
-        igual = PathUtils.image("components/elements/igual.png", random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), 1, 1, true);
-        result = PathUtils.image("components/elements/result-teste.png", random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), 1, 1, true);
-        fim = PathUtils.image("components/elements/fim.png", random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), 1, 1, true);
+        var = new Component("components/elements/var-teste.png",
+                random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()));
+
+        back = PathUtils.image("components/elements/back.png", 150, 600, 1, 1, true);
+        forward = PathUtils.image("components/elements/forward.png", posFinalX - 150, 600, 1, 1, true);
+
+        attempts = FontUtils.createText(FontUtils.generateCrackManFont(), 70, 1, Color.WHITE,
+                3, 3, new Color(0, 0.5f, 0, 0.75f), currentAttempt+"/"+limitAttempt,
+                50, 50, meioTelaX - 75, meioTelaY -325);
+
+        resultPanel = PathUtils.image("components/modalResult.png", meioTelaX-125, meioTelaY-75, 1.5f, 1.5f, true);
+        resultPanel.setVisible(false);
+
+        resultPanelLabel = FontUtils.createText(FontUtils.generateCrackManFont(), 70, 1, Color.WHITE,
+        3, 3, new Color(0, 0.5f, 0, 0.75f), "Resultado",
+        50, 50, meioTelaX - 210, meioTelaY + 100);
+        resultPanelLabel.setVisible(false);
+
+        success = PathUtils.image("components/success.png", meioTelaX + 140, meioTelaY + 50, 0.5f, 0.5f, true);
+        success.setVisible(false);
+        failed = PathUtils.image("components/fail.png", meioTelaX + 140, meioTelaY + 50, 0.5f, 0.5f, true);
+        failed.setVisible(false);
+        closeButton = PathUtils.image("components/fecharOption.png", meioTelaX + 300, meioTelaY + 175, 1, 1, true);
+        closeButton.setVisible(false);
 
         //Actors
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
         stage.addActor(bg);
         stage.addActor(finn);
-        stage.addActor(se);
+        stage.addActor(back);
+        stage.addActor(forward);
         stage.addActor(var);
-        stage.addActor(igual);
-        stage.addActor(result);
-        stage.addActor(fim);
+        stage.addActor(resultPanel);
+        stage.addActor(resultPanelLabel);
+        stage.addActor(attempts);
+        stage.addActor(success);
+        stage.addActor(failed);
+        stage.addActor(closeButton);
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
         //Eventos
-        se.addListener(new DragListener() {
+
+        back.addListener(new EventListener() {
             @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                se.moveBy(x - se.getWidth() / 2, y - se.getHeight() / 2);
+            public boolean handle(Event event) {
+                Gdx.app.log("Ação", "Voltando para tela de seleção de mundos...");
+                game.setScreen(new WorldScreen(game));
+                return false;
             }
         });
+
+        forward.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+                Gdx.app.log("Ação", "Executando código");
+                valueVar = (input.getValue() != null)?input.getValue():0;
+                currentAttempt ++;
+                attempts.setText(currentAttempt+"/"+limitAttempt);
+            }
+        });
+
+        var.addListener(new ActorGestureListener(){
+            @Override
+            public boolean longPress(Actor actor, float x, float y) {
+                Gdx.app.log("Ação", "Atribuir valor");
+                Gdx.input.getTextInput(input, "Digite um NÚMERO!", "", "");
+                return super.longPress(actor, x, y);
+            }
+        });
+
         var.addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
-                var.moveBy(x - se.getWidth() / 2, y - se.getHeight() / 2);
-            }
-        });
-        igual.addListener(new DragListener() {
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                igual.moveBy(x - se.getWidth() / 2, y - se.getHeight() / 2);
-            }
-        });
-        result.addListener(new DragListener() {
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                result.moveBy(x - se.getWidth() / 2, y - se.getHeight() / 2);
-            }
-        });
-        fim.addListener(new DragListener() {
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                fim.moveBy(x - se.getWidth() / 2, y - se.getHeight() / 2);
+                var.moveBy(x - var.getWidth() / 2, y - var.getHeight() / 2);
             }
         });
 
@@ -135,15 +222,46 @@ public class AdventureTimeScreen implements Screen {
             finnStance[i] = new Texture("chars/finn/stance" + i + ".png");
         }
 
-        animation = new Animation<Texture>(0.08f, finnStance);
+        finnStanceAnimation = new Animation<Texture>(0.08f, finnStance);
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
+
+        if(finn.getState() == StateType.STANCE && finn.getX() >= 988 && currentAttempt <= 3){
+            resultPanel.setVisible(true);
+            resultPanelLabel.setVisible(true);
+            success.setVisible(true);
+            closeButton.setVisible(true);
+            var.clearListeners();
+            back.clearListeners();
+            forward.clearListeners();
+        }
+
+        if(currentAttempt > 3 && finn.getX() < 988){
+            resultPanel.setVisible(true);
+            resultPanelLabel.setVisible(true);
+            failed.setVisible(true);
+            closeButton.setVisible(true);
+            var.clearListeners();
+            back.clearListeners();
+            forward.clearListeners();
+        }
+
+        if(valueVar > 0 && finn.getState() == StateType.STANCE && currentAttempt <= 3){
+            if(finn.getX() < 988){
+                valueVar--;
+                finn.setState(StateType.JUMP);
+            }
+        }
+
+        if(finn.getState() == StateType.RESET){
+            forward.setColor(Color.WHITE);
+            forward.setVisible(true);
+        }
 
         stage.act(Gdx.graphics.getDeltaTime()); //Perform ui logic
         stage.draw(); //Draw the ui
@@ -173,6 +291,10 @@ public class AdventureTimeScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
+        batch.dispose();
+        bgm.dispose();
+        game.dispose();
+        skin.dispose();
     }
 }
