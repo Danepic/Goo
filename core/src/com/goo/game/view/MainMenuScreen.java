@@ -102,7 +102,6 @@ public class MainMenuScreen implements Screen {
         option = PathUtils.image("components/modalOption.png", meioTelaX + 20, meioTelaY, 0.95f, 0.95f, true);
         slider = PathUtils.slider("components/sliderTex.png", "components/sliderKnobTex.png",
                 meioTelaX, meioTelaY + 60, 1, 1);
-        slider.setValue(50);
         final SelectBox selectBox = StyleUtils.selectBoxStyleLanguage(skin, meioTelaX, meioTelaY - 85);
         optionClose = PathUtils.image("components/fecharOption.png", meioTelaX + 380, 570, 1, 1, true);
         optionReturn = PathUtils.image("components/voltarOption.png", meioTelaX , 175, 1, 1, true);
@@ -141,7 +140,12 @@ public class MainMenuScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
-        volume = slider.getValue();
+        if(!prefs.contains("Volume")){
+            volume = slider.getValue();
+        }else{
+            volume = prefs.getFloat("Volume", 50);
+        }
+        slider.setValue(volume);
 
         //BG
         bgm = Gdx.audio.newMusic(Gdx.files.internal("musics/main_bg.mp3"));
@@ -175,7 +179,7 @@ public class MainMenuScreen implements Screen {
         optionClose.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                slider.setValue(50);
+                slider.setValue(volume);
                 selectBox.setSelected("English");
                 stage.getActors().get(8).setVisible(false);
                 stage.getActors().get(9).setVisible(false);

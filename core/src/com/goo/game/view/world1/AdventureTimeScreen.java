@@ -2,6 +2,7 @@ package com.goo.game.view.world1;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.actors.FinnActor;
 import com.goo.game.components.Component;
+import com.goo.game.enums.PhaseType;
 import com.goo.game.enums.StateType;
 import com.goo.game.utils.FontUtils;
 import com.goo.game.utils.NumericInputListenerUtils;
@@ -43,6 +45,9 @@ import jdk.nashorn.internal.runtime.regexp.RegExpMatcher;
 public class AdventureTimeScreen implements Screen {
 
     private Game game;
+    private PhaseType phase;
+
+    private Preferences prefs;
 
     private SpriteBatch batch;
 
@@ -87,14 +92,27 @@ public class AdventureTimeScreen implements Screen {
     private Image failed;
     private Image closeButton;
 
+    private Image stars0;
+    private Image stars1;
+    private Image stars2;
+    private Image stars3;
+
     public AdventureTimeScreen(Game game) {
         this.game = game;
+    }
+
+    public AdventureTimeScreen(Game game, PhaseType phase) {
+        this.game = game;
+        this.phase = phase;
     }
 
     @Override
     public void show() {
         //Batch
         batch = new SpriteBatch();
+
+        //Preferences
+        prefs = Gdx.app.getPreferences("userPref");
 
         //Skin
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
@@ -163,6 +181,15 @@ public class AdventureTimeScreen implements Screen {
         closeButton = PathUtils.image("components/fecharOption.png", meioTelaX + 300, meioTelaY + 175, 1, 1, true);
         closeButton.setVisible(false);
 
+        stars0 = PathUtils.image("components/ranking0.png", meioTelaX, meioTelaY - 150, 1, 1, true);
+        stars0.setVisible(false);
+        stars1 = PathUtils.image("components/ranking1.png", meioTelaX, meioTelaY - 150, 1, 1, true);
+        stars1.setVisible(false);
+        stars2 = PathUtils.image("components/ranking2.png", meioTelaX, meioTelaY - 150, 1, 1, true);
+        stars2.setVisible(false);
+        stars3 = PathUtils.image("components/ranking3.png", meioTelaX, meioTelaY - 150, 1, 1, true);
+        stars3.setVisible(false);
+
         //Actors
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
         stage.addActor(bg);
@@ -176,10 +203,23 @@ public class AdventureTimeScreen implements Screen {
         stage.addActor(success);
         stage.addActor(failed);
         stage.addActor(closeButton);
+        stage.addActor(stars0);
+        stage.addActor(stars1);
+        stage.addActor(stars2);
+        stage.addActor(stars3);
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
         //Eventos
+
+        closeButton.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                Gdx.app.log("Ação", "Voltando para tela de seleção de mundos...");
+                game.setScreen(new WorldScreen(game, phase));
+                return false;
+            }
+        });
 
         back.addListener(new EventListener() {
             @Override
@@ -239,6 +279,19 @@ public class AdventureTimeScreen implements Screen {
             var.clearListeners();
             back.clearListeners();
             forward.clearListeners();
+            phase = PhaseType.SECOND;
+
+            switch (currentAttempt){
+                case 1:
+                    stars3.setVisible(true);
+                    break;
+                case 2:
+                    stars2.setVisible(true);
+                    break;
+                case 3:
+                    stars1.setVisible(true);
+                    break;
+            }
         }
 
         if(currentAttempt > 3 && finn.getX() < 988){
@@ -249,6 +302,8 @@ public class AdventureTimeScreen implements Screen {
             var.clearListeners();
             back.clearListeners();
             forward.clearListeners();
+            phase = PhaseType.FIRST;
+            stars0.setVisible(true);
         }
 
         if(valueVar > 0 && finn.getState() == StateType.STANCE && currentAttempt <= 3){
