@@ -5,18 +5,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.goo.game.utils.NumericInputListenerUtils;
 
-public class Component extends Actor {
+public class VarNumeric extends Actor {
 
     private Rectangle rectangle;
     private Texture texture;
+    private NumericInputListenerUtils input;
 
-    public Component(String path, float posx, float posy) {
+    public VarNumeric(String path, float posx, float posy) {
         this.texture = new Texture(path);
 
         Rectangle rect = new Rectangle();
@@ -27,6 +27,24 @@ public class Component extends Actor {
         this.setWidth(texture.getWidth());
         this.setHeight(texture.getHeight());
         this.setPosition(posx, posy);
+
+        input = new NumericInputListenerUtils();
+
+        this.addListener(new ActorGestureListener(){
+            @Override
+            public boolean longPress(Actor actor, float x, float y) {
+                Gdx.app.log("Ação", "Atribuir valor");
+                Gdx.input.getTextInput(input, "Digite um NÚMERO!", "", "");
+                return super.longPress(actor, x, y);
+            }
+        });
+
+        this.addListener(new DragListener() {
+            @Override
+            public void drag(InputEvent event, float x, float y, int pointer) {
+                VarNumeric.this.moveBy(x - VarNumeric.this.getWidth() / 2, y - VarNumeric.this.getHeight() / 2);
+            }
+        });
     }
 
     @Override
@@ -54,5 +72,13 @@ public class Component extends Actor {
 
     public void setTexture(Texture texture) {
         this.texture = texture;
+    }
+
+    public NumericInputListenerUtils getInput() {
+        return input;
+    }
+
+    public void setInput(NumericInputListenerUtils input) {
+        this.input = input;
     }
 }

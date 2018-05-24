@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -17,20 +18,23 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.actors.FinnActor;
 import com.goo.game.components.VarNumeric;
 import com.goo.game.enums.PhaseType;
 import com.goo.game.enums.StateType;
 import com.goo.game.utils.FontUtils;
+import com.goo.game.utils.NumericInputListenerUtils;
 import com.goo.game.utils.PathUtils;
 import com.goo.game.view.WorldScreen;
 
 import java.util.Random;
 
 
-public class AdventureTimeScreen implements Screen {
+public class AdventureTimeScreenStuff implements Screen {
 
     private Game game;
     private PhaseType phase;
@@ -38,6 +42,8 @@ public class AdventureTimeScreen implements Screen {
     private Preferences prefs;
 
     private SpriteBatch batch;
+
+    private NumericInputListenerUtils input;
 
     private Stage stage;
 
@@ -83,11 +89,11 @@ public class AdventureTimeScreen implements Screen {
     private Image stars2;
     private Image stars3;
 
-    public AdventureTimeScreen(Game game) {
+    public AdventureTimeScreenStuff(Game game) {
         this.game = game;
     }
 
-    public AdventureTimeScreen(Game game, PhaseType phase) {
+    public AdventureTimeScreenStuff(Game game, PhaseType phase) {
         this.game = game;
         this.phase = phase;
     }
@@ -102,6 +108,9 @@ public class AdventureTimeScreen implements Screen {
 
         //Skin
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+
+        //Input
+        input = new NumericInputListenerUtils();
 
         //Animation Stance
         finnStance = new Texture[11];
@@ -218,9 +227,25 @@ public class AdventureTimeScreen implements Screen {
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 super.touchUp(event, x, y, pointer, button);
                 Gdx.app.log("Ação", "Executando código");
-                valueVar = (varNumeric.getInput().getValue() != null)? varNumeric.getInput().getValue():0;
+                valueVar = (input.getValue() != null)?input.getValue():0;
                 currentAttempt ++;
                 attempts.setText(currentAttempt+"/"+limitAttempt);
+            }
+        });
+
+        varNumeric.addListener(new ActorGestureListener(){
+            @Override
+            public boolean longPress(Actor actor, float x, float y) {
+                Gdx.app.log("Ação", "Atribuir valor");
+                Gdx.input.getTextInput(input, "Digite um NÚMERO!", "", "");
+                return super.longPress(actor, x, y);
+            }
+        });
+
+        varNumeric.addListener(new DragListener() {
+            @Override
+            public void drag(InputEvent event, float x, float y, int pointer) {
+                varNumeric.moveBy(x - varNumeric.getWidth() / 2, y - varNumeric.getHeight() / 2);
             }
         });
 

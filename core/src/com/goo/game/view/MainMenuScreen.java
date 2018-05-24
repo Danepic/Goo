@@ -79,7 +79,7 @@ public class MainMenuScreen implements Screen {
         //Batch
         batch = new SpriteBatch();
 
-        //Var Utils
+        //VarNumeric Utils
         posFinalX = Gdx.graphics.getWidth();
         posFinalY = Gdx.graphics.getWidth();
 
