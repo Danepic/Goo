@@ -20,6 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.actors.FinnActor;
+import com.goo.game.bgs.GrasslandBG;
+import com.goo.game.components.Back;
 import com.goo.game.components.VarNumeric;
 import com.goo.game.enums.PhaseType;
 import com.goo.game.enums.StateType;
@@ -45,7 +47,7 @@ public class AdventureTimeScreen implements Screen {
 
     private Music bgm;
 
-    private Image bg;
+    private GrasslandBG bg;
 
     private Texture[] finnStance;
     private Animation<Texture> finnStanceAnimation;
@@ -71,7 +73,7 @@ public class AdventureTimeScreen implements Screen {
     private int currentAttempt;
     private final int limitAttempt = 3;
 
-    private Image back;
+    private Back back;
     private Image forward;
 
     private Image success;
@@ -136,13 +138,13 @@ public class AdventureTimeScreen implements Screen {
         Random random = new Random();
 
         //BG
-        bg = PathUtils.image("background/01bg.png", 450, 275, 1.40f, 1.40f, true);
+        bg = new GrasslandBG();
 
         //Button
-        varNumeric = new VarNumeric("components/elements/varNumeric-teste.png",
+        varNumeric = new VarNumeric("components/elements/var-teste.png",
                 random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()));
 
-        back = PathUtils.image("components/elements/back.png", 150, 600, 1, 1, true);
+        back = new Back(game);
         forward = PathUtils.image("components/elements/forward.png", posFinalX - 150, 600, 1, 1, true);
 
         attempts = FontUtils.createText(FontUtils.generateCrackManFont(), 70, 1, Color.WHITE,
@@ -175,9 +177,9 @@ public class AdventureTimeScreen implements Screen {
 
         //Actors
         stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
-        stage.addActor(bg);
+        stage.addActor(bg.getImage());
         stage.addActor(finn);
-        stage.addActor(back);
+        stage.addActor(back.getImage());
         stage.addActor(forward);
         stage.addActor(varNumeric);
         stage.addActor(resultPanel);
@@ -200,15 +202,6 @@ public class AdventureTimeScreen implements Screen {
             public boolean handle(Event event) {
                 Gdx.app.log("Ação", "Voltando para tela de seleção de mundos...");
                 game.setScreen(new WorldScreen(game, phase));
-                return false;
-            }
-        });
-
-        back.addListener(new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                Gdx.app.log("Ação", "Voltando para tela de seleção de mundos...");
-                game.setScreen(new WorldScreen(game));
                 return false;
             }
         });
