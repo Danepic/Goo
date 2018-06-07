@@ -133,7 +133,7 @@ public class AdventureTimeScreenStuff implements Screen {
         }
         finnLandAnimation = new Animation<Texture>(0.02f, finnLand);
 
-        finn = new FinnActor(225, 300, 100, 100, finnStanceAnimation, finnJumpAnimation, finnLandAnimation);
+        finn = new FinnActor(225, 300, 100, 100);
 
         //VarNumeric Utils
         final int posFinalX = Gdx.graphics.getWidth();
@@ -148,8 +148,8 @@ public class AdventureTimeScreenStuff implements Screen {
         bg = PathUtils.image("background/01bg.png", 450, 275, 1.40f, 1.40f, true);
 
         //Button
-        varNumeric = new VarNumeric("components/elements/varNumeric-teste.png",
-                random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()));
+//        varNumeric = new VarNumeric("components/elements/var-teste.png",
+//                random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()));
 
         back = PathUtils.image("components/elements/back.png", 150, 600, 1, 1, true);
         forward = PathUtils.image("components/elements/forward.png", posFinalX - 150, 600, 1, 1, true);

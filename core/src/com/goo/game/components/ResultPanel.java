@@ -1,84 +1,97 @@
 package com.goo.game.components;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.goo.game.enums.PhaseType;
+import com.goo.game.utils.FontUtils;
 import com.goo.game.utils.NumericInputListenerUtils;
+import com.goo.game.utils.PathUtils;
+import com.goo.game.view.WorldScreen;
 
 public class ResultPanel extends Actor {
 
-    private Rectangle rectangle;
-    private Texture texture;
-    private NumericInputListenerUtils input;
+    private Image panel;
+    private Label label;
+    private Image success;
+    private Image failed;
+    private Image closeButton;
 
-    public ResultPanel(String path, float posx, float posy) {
-        this.texture = new Texture(path);
+    private PhaseType phase;
+    private Game game;
 
-        Rectangle rect = new Rectangle();
-        rect.setWidth(texture.getWidth());
-        rect.setHeight(texture.getHeight());
+    public ResultPanel(final Game game, final PhaseType phase) {
 
-        this.rectangle = rect;
-        this.setWidth(texture.getWidth());
-        this.setHeight(texture.getHeight());
-        this.setPosition(posx, posy);
+        this.panel = PathUtils.image("components/modalResult.png", (Gdx.graphics.getWidth()/2)-125,
+                (Gdx.graphics.getHeight()/2)-75, 1.5f, 1.5f, true);
+        this.panel.setVisible(false);
 
-        input = new NumericInputListenerUtils();
+        this.label = FontUtils.createText(FontUtils.generateCrackManFont(), 70, 1, Color.WHITE,
+                3, 3, new Color(0, 0.5f, 0, 0.75f), "Resultado", 50, 50, (Gdx.graphics.getWidth()/2) - 210,
+                (Gdx.graphics.getHeight()/2) + 100);
+        this.label.setVisible(false);
 
-        this.addListener(new ActorGestureListener(){
-            @Override
-            public boolean longPress(Actor actor, float x, float y) {
-                Gdx.app.log("Ação", "Atribuir valor");
-                Gdx.input.getTextInput(input, "Digite um NÚMERO!", "", "");
-                return super.longPress(actor, x, y);
-            }
-        });
+        this.success = PathUtils.image("components/success.png", (Gdx.graphics.getWidth()/2) + 140,
+                (Gdx.graphics.getHeight()/2) + 50, 0.5f, 0.5f, true);
+        this.success.setVisible(false);
 
-        this.addListener(new DragListener() {
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                ResultPanel.this.moveBy(x - ResultPanel.this.getWidth() / 2, y - ResultPanel.this.getHeight() / 2);
-            }
-        });
+        this.failed = PathUtils.image("components/fail.png", (Gdx.graphics.getWidth()/2) + 140, (Gdx.graphics.getHeight()/2) + 50,
+                0.5f, 0.5f, true);
+        this.failed.setVisible(false);
+
+        this.closeButton = PathUtils.image("components/fecharOption.png", (Gdx.graphics.getWidth()/2) + 300,
+                (Gdx.graphics.getHeight()/2) + 175, 1, 1, true);
+        this.closeButton.setVisible(false);
     }
 
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-        batch.draw(texture, getX(), getY());
+    public Image getPanel() {
+        return panel;
     }
 
-    @Override
-    public void act(float delta) {
-        super.act(delta);
+    public void setPanel(Image panel) {
+        this.panel = panel;
     }
 
-    public Rectangle getRectangle() {
-        return rectangle;
+    public Label getLabel() {
+        return label;
     }
 
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
+    public void setLabel(Label label) {
+        this.label = label;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public Image getSuccess() {
+        return success;
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
+    public void setSuccess(Image success) {
+        this.success = success;
     }
 
-    public NumericInputListenerUtils getInput() {
-        return input;
+    public Image getFailed() {
+        return failed;
     }
 
-    public void setInput(NumericInputListenerUtils input) {
-        this.input = input;
+    public void setFailed(Image failed) {
+        this.failed = failed;
+    }
+
+    public Image getCloseButton() {
+        return closeButton;
+    }
+
+    public void setCloseButton(Image closeButton) {
+        this.closeButton = closeButton;
     }
 }

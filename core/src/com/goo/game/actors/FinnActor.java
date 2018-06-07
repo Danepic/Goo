@@ -18,6 +18,20 @@ import javafx.scene.shape.MoveTo;
 
 public class FinnActor extends Actor{
 
+    private Texture[] finnStance;
+    private Animation<Texture> finnStanceAnimation;
+
+    private Texture[] finnJump;
+    private Animation<Texture> finnJumpAnimation;
+
+    private Texture[] finnLand;
+    private Animation<Texture> finnLandAnimation;
+
+    private Texture[] finnDancing;
+    private Animation<Texture> finnDancingAnimation;
+
+    private Animation[] animControl = new Animation[3];
+
     private Animation stance;
     private Animation jump;
     private Animation land;
@@ -34,19 +48,40 @@ public class FinnActor extends Actor{
     float landTime = 0f;
     int jumpCount = 0;
 
-    public FinnActor(float posx, float posy, float scalex, float scaley, Animation... animation){
-        for (int i = 0; i < animation.length; i++){
+    public FinnActor(float posx, float posy, float scalex, float scaley){
+        //Animation Stance
+        finnStance = new Texture[11];
+        for (int i = 0; i < finnStance.length; i++){
+            finnStance[i] = new Texture("chars/finn/stance"+i+".png");
+        }
+        animControl[0] = new Animation<Texture>(0.08f, finnStance);
+
+        //Animation Jump
+        finnJump = new Texture[15];
+        for (int i = 0; i < finnJump.length; i++){
+            finnJump[i] = new Texture("chars/finn/jump"+i+".png");
+        }
+        animControl[1] = new Animation<Texture>(0.08f, finnJump);
+
+        //Animation Land
+        finnLand = new Texture[4];
+        for (int i = 0; i < finnLand.length; i++){
+            finnLand[i] = new Texture("chars/finn/land"+i+".png");
+        }
+        animControl[2] = new Animation<Texture>(0.02f, finnLand);
+
+        for (int i = 0; i < animControl.length; i++){
             if (i == 0){
-                this.stance = animation[0];
+                this.stance = animControl[0];
             }
             if (i == 1){
-                this.jump = animation[1];
+                this.jump = animControl[1];
             }
             if (i == 2){
-                this.land = animation[2];
+                this.land = animControl[2];
             }
             if (i == 3){
-                this.dancing = animation[3];
+                this.dancing = animControl[3];
             }
         }
         this.setScale(scalex, scaley);

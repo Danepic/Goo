@@ -1,13 +1,16 @@
 package com.goo.game.components;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.goo.game.utils.FontUtils;
 import com.goo.game.utils.NumericInputListenerUtils;
 
 public class VarNumeric extends Actor {
@@ -15,9 +18,14 @@ public class VarNumeric extends Actor {
     private Rectangle rectangle;
     private Texture texture;
     private NumericInputListenerUtils input;
+    private Label varName;
 
-    public VarNumeric(String path, float posx, float posy) {
+    public VarNumeric(String path, float posx, float posy, String varName) {
         this.texture = new Texture(path);
+
+        this.varName = FontUtils.createText(FontUtils.generateCrackManFont(), 40, 1, Color.WHITE,
+                3, 3, Color.DARK_GRAY, varName,
+                50, 50, posx + 27, posy + 13);
 
         Rectangle rect = new Rectangle();
         rect.setWidth(texture.getWidth());
@@ -43,6 +51,7 @@ public class VarNumeric extends Actor {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
                 VarNumeric.this.moveBy(x - VarNumeric.this.getWidth() / 2, y - VarNumeric.this.getHeight() / 2);
+                VarNumeric.this.getVarName().moveBy(x - VarNumeric.this.getWidth() / 2, y - VarNumeric.this.getHeight() / 2);
             }
         });
     }
@@ -80,5 +89,13 @@ public class VarNumeric extends Actor {
 
     public void setInput(NumericInputListenerUtils input) {
         this.input = input;
+    }
+
+    public Label getVarName() {
+        return varName;
+    }
+
+    public void setVarName(Label varName) {
+        this.varName = varName;
     }
 }

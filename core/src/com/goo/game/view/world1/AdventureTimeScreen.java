@@ -21,7 +21,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.actors.FinnActor;
 import com.goo.game.bgs.GrasslandBG;
+import com.goo.game.components.Attempts;
 import com.goo.game.components.Back;
+import com.goo.game.components.Forward;
+import com.goo.game.components.ResultPanel;
 import com.goo.game.components.VarNumeric;
 import com.goo.game.enums.PhaseType;
 import com.goo.game.enums.StateType;
@@ -35,7 +38,7 @@ import java.util.Random;
 public class AdventureTimeScreen implements Screen {
 
     private Game game;
-    private PhaseType phase;
+    private PhaseType phase = PhaseType.FIRST;
 
     private Preferences prefs;
 
@@ -49,36 +52,18 @@ public class AdventureTimeScreen implements Screen {
 
     private GrasslandBG bg;
 
-    private Texture[] finnStance;
-    private Animation<Texture> finnStanceAnimation;
-
-    private Texture[] finnJump;
-    private Animation<Texture> finnJumpAnimation;
-
-    private Texture[] finnLand;
-    private Animation<Texture> finnLandAnimation;
-
-    private Texture[] finnDancing;
-    private Animation<Texture> finnDancingAnimation;
 
     private FinnActor finn;
 
     private VarNumeric varNumeric;
     private int valueVar;
 
-    private Image resultPanel;
-    private Label resultPanelLabel;
-
-    private Label attempts;
-    private int currentAttempt;
-    private final int limitAttempt = 3;
+    private Attempts attempts;
 
     private Back back;
-    private Image forward;
+    private Forward forward;
 
-    private Image success;
-    private Image failed;
-    private Image closeButton;
+    private ResultPanel resultPanel;
 
     private Image stars0;
     private Image stars1;
@@ -105,28 +90,7 @@ public class AdventureTimeScreen implements Screen {
         //Skin
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
-        //Animation Stance
-        finnStance = new Texture[11];
-        for (int i = 0; i < finnStance.length; i++){
-            finnStance[i] = new Texture("chars/finn/stance"+i+".png");
-        }
-        finnStanceAnimation = new Animation<Texture>(0.08f, finnStance);
-
-        //Animation Jump
-        finnJump = new Texture[15];
-        for (int i = 0; i < finnJump.length; i++){
-            finnJump[i] = new Texture("chars/finn/jump"+i+".png");
-        }
-        finnJumpAnimation = new Animation<Texture>(0.08f, finnJump);
-
-        //Animation Land
-        finnLand = new Texture[4];
-        for (int i = 0; i < finnLand.length; i++){
-            finnLand[i] = new Texture("chars/finn/land"+i+".png");
-        }
-        finnLandAnimation = new Animation<Texture>(0.02f, finnLand);
-
-        finn = new FinnActor(225, 300, 100, 100, finnStanceAnimation, finnJumpAnimation, finnLandAnimation);
+        finn = new FinnActor(225, 300, 100, 100);
 
         //VarNumeric Utils
         final int posFinalX = Gdx.graphics.getWidth();
@@ -141,30 +105,15 @@ public class AdventureTimeScreen implements Screen {
         bg = new GrasslandBG();
 
         //Button
-        varNumeric = new VarNumeric("components/elements/var-teste.png",
-                random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()));
+        varNumeric = new VarNumeric("components/elements/var.png",
+                random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), "PULAR");
 
         back = new Back(game);
-        forward = PathUtils.image("components/elements/forward.png", posFinalX - 150, 600, 1, 1, true);
+        forward = new Forward();
 
-        attempts = FontUtils.createText(FontUtils.generateCrackManFont(), 70, 1, Color.WHITE,
-                3, 3, new Color(0, 0.5f, 0, 0.75f), currentAttempt+"/"+limitAttempt,
-                50, 50, meioTelaX - 75, meioTelaY -325);
+        attempts = new Attempts(3);
 
-        resultPanel = PathUtils.image("components/modalResult.png", meioTelaX-125, meioTelaY-75, 1.5f, 1.5f, true);
-        resultPanel.setVisible(false);
-
-        resultPanelLabel = FontUtils.createText(FontUtils.generateCrackManFont(), 70, 1, Color.WHITE,
-        3, 3, new Color(0, 0.5f, 0, 0.75f), "Resultado",
-        50, 50, meioTelaX - 210, meioTelaY + 100);
-        resultPanelLabel.setVisible(false);
-
-        success = PathUtils.image("components/success.png", meioTelaX + 140, meioTelaY + 50, 0.5f, 0.5f, true);
-        success.setVisible(false);
-        failed = PathUtils.image("components/fail.png", meioTelaX + 140, meioTelaY + 50, 0.5f, 0.5f, true);
-        failed.setVisible(false);
-        closeButton = PathUtils.image("components/fecharOption.png", meioTelaX + 300, meioTelaY + 175, 1, 1, true);
-        closeButton.setVisible(false);
+        resultPanel = new ResultPanel(game, phase);
 
         stars0 = PathUtils.image("components/ranking0.png", meioTelaX, meioTelaY - 150, 1, 1, true);
         stars0.setVisible(false);
@@ -180,14 +129,15 @@ public class AdventureTimeScreen implements Screen {
         stage.addActor(bg.getImage());
         stage.addActor(finn);
         stage.addActor(back.getImage());
-        stage.addActor(forward);
+        stage.addActor(forward.getImage());
         stage.addActor(varNumeric);
-        stage.addActor(resultPanel);
-        stage.addActor(resultPanelLabel);
-        stage.addActor(attempts);
-        stage.addActor(success);
-        stage.addActor(failed);
-        stage.addActor(closeButton);
+        stage.addActor(varNumeric.getVarName());
+        stage.addActor(resultPanel.getPanel());
+        stage.addActor(resultPanel.getLabel());
+        stage.addActor(attempts.getAttempts());
+        stage.addActor(resultPanel.getSuccess());
+        stage.addActor(resultPanel.getFailed());
+        stage.addActor(resultPanel.getCloseButton());
         stage.addActor(stars0);
         stage.addActor(stars1);
         stage.addActor(stars2);
@@ -195,9 +145,18 @@ public class AdventureTimeScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
-        //Eventos
+        //Eventos interativos no Stage
+        forward.getImage().addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+                valueVar = (varNumeric.getInput().getValue() != null)? varNumeric.getInput().getValue():0;
+                attempts.currentAttempt ++;
+                attempts.getAttempts().setText(attempts.currentAttempt+"/"+attempts.getLimitAttempt());
+            }
+        });
 
-        closeButton.addListener(new EventListener() {
+        resultPanel.getCloseButton().addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 Gdx.app.log("Ação", "Voltando para tela de seleção de mundos...");
@@ -205,24 +164,6 @@ public class AdventureTimeScreen implements Screen {
                 return false;
             }
         });
-
-        forward.addListener(new ClickListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                super.touchUp(event, x, y, pointer, button);
-                Gdx.app.log("Ação", "Executando código");
-                valueVar = (varNumeric.getInput().getValue() != null)? varNumeric.getInput().getValue():0;
-                currentAttempt ++;
-                attempts.setText(currentAttempt+"/"+limitAttempt);
-            }
-        });
-
-        //Start Animation
-        for (int i = 0; i < finnStance.length; i++) {
-            finnStance[i] = new Texture("chars/finn/stance" + i + ".png");
-        }
-
-        finnStanceAnimation = new Animation<Texture>(0.08f, finnStance);
     }
 
     @Override
@@ -231,17 +172,17 @@ public class AdventureTimeScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
 
-        if(finn.getState() == StateType.STANCE && finn.getX() >= 988 && currentAttempt <= 3){
-            resultPanel.setVisible(true);
-            resultPanelLabel.setVisible(true);
-            success.setVisible(true);
-            closeButton.setVisible(true);
+        if(finn.getState() == StateType.STANCE && finn.getX() >= 988 && attempts.currentAttempt <= 3){
+            resultPanel.getPanel().setVisible(true);
+            resultPanel.getLabel().setVisible(true);
+            resultPanel.getSuccess().setVisible(true);
+            resultPanel.getCloseButton().setVisible(true);
             varNumeric.clearListeners();
-            back.clearListeners();
-            forward.clearListeners();
+            back.getImage().clearListeners();
+            forward.getImage().clearListeners();
             phase = PhaseType.SECOND;
 
-            switch (currentAttempt){
+            switch (attempts.currentAttempt){
                 case 1:
                     stars3.setVisible(true);
                     break;
@@ -254,19 +195,19 @@ public class AdventureTimeScreen implements Screen {
             }
         }
 
-        if(currentAttempt > 3 && finn.getX() < 988){
-            resultPanel.setVisible(true);
-            resultPanelLabel.setVisible(true);
-            failed.setVisible(true);
-            closeButton.setVisible(true);
+        if(attempts.currentAttempt > 3 && finn.getX() < 988){
+            resultPanel.getPanel().setVisible(true);
+            resultPanel.getLabel().setVisible(true);
+            resultPanel.getFailed().setVisible(true);
+            resultPanel.getCloseButton().setVisible(true);
             varNumeric.clearListeners();
-            back.clearListeners();
-            forward.clearListeners();
+            back.getImage().clearListeners();
+            forward.getImage().clearListeners();
             phase = PhaseType.FIRST;
             stars0.setVisible(true);
         }
 
-        if(valueVar > 0 && finn.getState() == StateType.STANCE && currentAttempt <= 3){
+        if(valueVar > 0 && finn.getState() == StateType.STANCE && attempts.currentAttempt <= 3){
             if(finn.getX() < 988){
                 valueVar--;
                 finn.setState(StateType.JUMP);

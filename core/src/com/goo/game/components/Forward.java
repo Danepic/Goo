@@ -20,17 +20,8 @@ public class Forward extends Actor {
 
     private Image image;
 
-    public Forward(final Game game) {
+    public Forward() {
         this.image = PathUtils.image("components/elements/forward.png", Gdx.graphics.getWidth() - 150, 600, 1, 1, true);
-
-        image.addListener(new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                Gdx.app.log("Ação", "Voltando para tela de seleção de mundos...");
-                game.setScreen(new WorldScreen(game));
-                return false;
-            }
-        });
     }
 
     public Image getImage() {
