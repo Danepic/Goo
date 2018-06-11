@@ -27,6 +27,10 @@ public class ResultPanel extends Actor {
     private Image success;
     private Image failed;
     private Image closeButton;
+    private Image stars0;
+    private Image stars1;
+    private Image stars2;
+    private Image stars3;
 
     private PhaseType phase;
     private Game game;
@@ -53,6 +57,33 @@ public class ResultPanel extends Actor {
         this.closeButton = PathUtils.image("components/fecharOption.png", (Gdx.graphics.getWidth()/2) + 300,
                 (Gdx.graphics.getHeight()/2) + 175, 1, 1, true);
         this.closeButton.setVisible(false);
+
+        this.stars0 = PathUtils.image("components/ranking0.png", (Gdx.graphics.getWidth()/2),
+                (Gdx.graphics.getHeight()/2) - 150, 1, 1, true);
+        this.stars0.setVisible(false);
+        this.stars1 = PathUtils.image("components/ranking1.png", (Gdx.graphics.getWidth()/2),
+                (Gdx.graphics.getHeight()/2) - 150, 1, 1, true);
+        this.stars1.setVisible(false);
+        this.stars2 = PathUtils.image("components/ranking2.png", (Gdx.graphics.getWidth()/2),
+                (Gdx.graphics.getHeight()/2) - 150, 1, 1, true);
+        this.stars2.setVisible(false);
+        this.stars3 = PathUtils.image("components/ranking3.png", (Gdx.graphics.getWidth()/2),
+                (Gdx.graphics.getHeight()/2) - 150, 1, 1, true);
+        this.stars3.setVisible(false);
+    }
+
+    public void starsResult(int currentAttempt){
+        switch (currentAttempt) {
+            case 1:
+                this.getStars3().setVisible(true);
+                break;
+            case 2:
+                this.getStars2().setVisible(true);
+                break;
+            case 3:
+                this.getStars1().setVisible(true);
+                break;
+        }
     }
 
     public Image getPanel() {
@@ -93,5 +124,53 @@ public class ResultPanel extends Actor {
 
     public void setCloseButton(Image closeButton) {
         this.closeButton = closeButton;
+    }
+
+    public Image getStars0() {
+        return stars0;
+    }
+
+    public void setStars0(Image stars0) {
+        this.stars0 = stars0;
+    }
+
+    public Image getStars1() {
+        return stars1;
+    }
+
+    public void setStars1(Image stars1) {
+        this.stars1 = stars1;
+    }
+
+    public Image getStars2() {
+        return stars2;
+    }
+
+    public void setStars2(Image stars2) {
+        this.stars2 = stars2;
+    }
+
+    public Image getStars3() {
+        return stars3;
+    }
+
+    public void setStars3(Image stars3) {
+        this.stars3 = stars3;
+    }
+
+    public PhaseType getPhase() {
+        return phase;
+    }
+
+    public void setPhase(PhaseType phase) {
+        this.phase = phase;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 }

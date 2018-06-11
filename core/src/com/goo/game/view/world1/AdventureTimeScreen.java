@@ -30,6 +30,7 @@ import com.goo.game.enums.PhaseType;
 import com.goo.game.enums.StateType;
 import com.goo.game.utils.FontUtils;
 import com.goo.game.utils.PathUtils;
+import com.goo.game.utils.StageUtils;
 import com.goo.game.view.WorldScreen;
 
 import java.util.Random;
@@ -41,34 +42,18 @@ public class AdventureTimeScreen implements Screen {
     private PhaseType phase = PhaseType.FIRST;
 
     private Preferences prefs;
-
     private SpriteBatch batch;
-
     private Stage stage;
-
     private Skin skin;
-
     private Music bgm;
-
     private GrasslandBG bg;
-
-
     private FinnActor finn;
-
     private VarNumeric varNumeric;
     private int valueVar;
-
     private Attempts attempts;
-
     private Back back;
     private Forward forward;
-
     private ResultPanel resultPanel;
-
-    private Image stars0;
-    private Image stars1;
-    private Image stars2;
-    private Image stars3;
 
     public AdventureTimeScreen(Game game) {
         this.game = game;
@@ -115,33 +100,11 @@ public class AdventureTimeScreen implements Screen {
 
         resultPanel = new ResultPanel(game, phase);
 
-        stars0 = PathUtils.image("components/ranking0.png", meioTelaX, meioTelaY - 150, 1, 1, true);
-        stars0.setVisible(false);
-        stars1 = PathUtils.image("components/ranking1.png", meioTelaX, meioTelaY - 150, 1, 1, true);
-        stars1.setVisible(false);
-        stars2 = PathUtils.image("components/ranking2.png", meioTelaX, meioTelaY - 150, 1, 1, true);
-        stars2.setVisible(false);
-        stars3 = PathUtils.image("components/ranking3.png", meioTelaX, meioTelaY - 150, 1, 1, true);
-        stars3.setVisible(false);
-
         //Actors
-        stage = new Stage(new ScreenViewport()); //Set up a stage for the ui
-        stage.addActor(bg.getImage());
-        stage.addActor(finn);
-        stage.addActor(back.getImage());
-        stage.addActor(forward.getImage());
-        stage.addActor(varNumeric);
-        stage.addActor(varNumeric.getVarName());
-        stage.addActor(resultPanel.getPanel());
-        stage.addActor(resultPanel.getLabel());
-        stage.addActor(attempts.getAttempts());
-        stage.addActor(resultPanel.getSuccess());
-        stage.addActor(resultPanel.getFailed());
-        stage.addActor(resultPanel.getCloseButton());
-        stage.addActor(stars0);
-        stage.addActor(stars1);
-        stage.addActor(stars2);
-        stage.addActor(stars3);
+        stage = StageUtils.stageBuilder(bg.getImage(), finn, back.getImage(), forward.getImage(), varNumeric,
+                varNumeric.getVarName(), resultPanel.getPanel(), resultPanel.getLabel(), attempts.getAttempts(),
+                resultPanel.getSuccess(), resultPanel.getFailed(), resultPanel.getCloseButton(), resultPanel.getStars0(),
+                resultPanel.getStars1(), resultPanel.getStars2(), resultPanel.getStars3());
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
@@ -182,17 +145,7 @@ public class AdventureTimeScreen implements Screen {
             forward.getImage().clearListeners();
             phase = PhaseType.SECOND;
 
-            switch (attempts.currentAttempt){
-                case 1:
-                    stars3.setVisible(true);
-                    break;
-                case 2:
-                    stars2.setVisible(true);
-                    break;
-                case 3:
-                    stars1.setVisible(true);
-                    break;
-            }
+            resultPanel.starsResult(attempts.currentAttempt);
         }
 
         if(attempts.currentAttempt > 3 && finn.getX() < 988){
@@ -204,7 +157,7 @@ public class AdventureTimeScreen implements Screen {
             back.getImage().clearListeners();
             forward.getImage().clearListeners();
             phase = PhaseType.FIRST;
-            stars0.setVisible(true);
+            resultPanel.getStars0().setVisible(true);
         }
 
         if(valueVar > 0 && finn.getState() == StateType.STANCE && attempts.currentAttempt <= 3){
