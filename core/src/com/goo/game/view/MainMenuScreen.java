@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -58,6 +59,10 @@ public class MainMenuScreen implements Screen {
     private Image playOption;
     private Image playExit;
 
+    private Image registerModal;
+    private Image loginModal;
+    private TextField usernameTextField;
+
     ////////////////////////////////
     int posFinalX;
     int posFinalY;
@@ -75,6 +80,8 @@ public class MainMenuScreen implements Screen {
 
         //Preferences
         prefs = Gdx.app.getPreferences("userPref");
+
+        Gdx.app.log("Preferences", prefs.getFloat("Volume") + " " + prefs.getString("Language") + " " + prefs.getBoolean("User", false));
 
         //Batch
         batch = new SpriteBatch();
@@ -97,6 +104,13 @@ public class MainMenuScreen implements Screen {
         //Components
         Random randomBG = new Random();
         int randomValue = randomBG.nextInt(3);
+
+        //Register
+        registerModal = PathUtils.image("components/modalResult.png", meioTelaX + 20, meioTelaY, 0.95f, 0.95f, true);
+        loginModal = PathUtils.image("components/modalResult.png", meioTelaX + 20, meioTelaY - 50, 1.25f, 1.7f, true);
+        usernameTextField = new TextField("", skin);
+        usernameTextField.setPosition(meioTelaX + 20, meioTelaY);
+        usernameTextField.setSize(400, 75);
 
         //Options
         option = PathUtils.image("components/modalOption.png", meioTelaX + 20, meioTelaY, 0.95f, 0.95f, true);
@@ -131,12 +145,18 @@ public class MainMenuScreen implements Screen {
         stage.addActor(selectBox);
         stage.addActor(optionClose);
         stage.addActor(optionReturn);
+        stage.addActor(registerModal);
+        stage.addActor(loginModal);
+        stage.addActor(usernameTextField);
 
         stage.getActors().get(8).setVisible(false);
         stage.getActors().get(9).setVisible(false);
         stage.getActors().get(10).setVisible(false);
         stage.getActors().get(11).setVisible(false);
         stage.getActors().get(12).setVisible(false);
+        registerModal.setVisible(false);
+        loginModal.setVisible(false);
+        usernameTextField.setVisible(false);
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
@@ -157,8 +177,13 @@ public class MainMenuScreen implements Screen {
         playButton.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                Gdx.app.log("Ação", "Botão 'Play' tocado...");
-                game.setScreen(new WorldScreen(game, bgm));
+                if(prefs.getBoolean("User") == true){
+                    Gdx.app.log("Ação", "Botão 'Play' tocado...");
+                    game.setScreen(new WorldScreen(game, bgm));
+                }else{
+                    loginModal.setVisible(true);
+                    usernameTextField.setVisible(true);
+                }
                 return false;
             }
         });
