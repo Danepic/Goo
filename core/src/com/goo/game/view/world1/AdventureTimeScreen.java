@@ -25,6 +25,7 @@ import com.goo.game.components.Attempts;
 import com.goo.game.components.Back;
 import com.goo.game.components.Forward;
 import com.goo.game.components.ResultPanel;
+import com.goo.game.components.Title;
 import com.goo.game.components.VarNumeric;
 import com.goo.game.enums.PhaseType;
 import com.goo.game.enums.StateType;
@@ -48,6 +49,7 @@ public class AdventureTimeScreen implements Screen {
     private Music bgm;
     private GrasslandBG bg;
     private FinnActor finn;
+    private Title title;
     private VarNumeric varNumeric;
     private int valueVar;
     private Attempts attempts;
@@ -90,6 +92,8 @@ public class AdventureTimeScreen implements Screen {
         bg = new GrasslandBG();
 
         //Button
+        title = new Title("components/elements/title.png", meioTelaX - 300, Gdx.graphics.getHeight(), "Atribuição de valor");
+
         varNumeric = new VarNumeric("components/elements/var.png",
                 random.nextInt(Gdx.graphics.getWidth()), random.nextInt(Gdx.graphics.getHeight()), "PULAR");
 
@@ -104,7 +108,7 @@ public class AdventureTimeScreen implements Screen {
         stage = StageUtils.stageBuilder(bg.getImage(), finn, back.getImage(), forward.getImage(), varNumeric,
                 varNumeric.getVarName(), resultPanel.getPanel(), resultPanel.getLabel(), attempts.getAttempts(),
                 resultPanel.getSuccess(), resultPanel.getFailed(), resultPanel.getCloseButton(), resultPanel.getStars0(),
-                resultPanel.getStars1(), resultPanel.getStars2(), resultPanel.getStars3());
+                resultPanel.getStars1(), resultPanel.getStars2(), resultPanel.getStars3(), title, title.getLabel());
 
         Gdx.input.setInputProcessor(stage); //Start taking input from the ui
 
