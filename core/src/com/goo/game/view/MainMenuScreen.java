@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,14 +22,24 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.goo.game.components.LoginPanel;
+import com.goo.game.components.Title;
+import com.goo.game.components.Toast;
+import com.goo.game.model.User;
 import com.goo.game.utils.PathUtils;
 import com.goo.game.utils.StyleUtils;
 
 import java.util.Random;
 
+import mk.gdx.firebase.GdxFIRApp;
+import mk.gdx.firebase.GdxFIRAuth;
+import mk.gdx.firebase.auth.GdxFirebaseUser;
+import mk.gdx.firebase.callbacks.AuthCallback;
+
 public class MainMenuScreen implements Screen {
 
     private Game game;
+
+    private GdxFIRApp app;
 
     private Preferences prefs;
 
@@ -60,6 +71,9 @@ public class MainMenuScreen implements Screen {
     private Image playOption;
     private Image playExit;
 
+    private Toast toast;
+    private String message = "---";
+
     private Image registerModal;
     private LoginPanel loginModal;
 
@@ -75,6 +89,8 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
+
+        GdxFIRApp.instance().configure();
 
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
@@ -95,6 +111,9 @@ public class MainMenuScreen implements Screen {
 
         //Sprite
         logo = PathUtils.image("components/logo.png", 185, meioTelaY + 200, 1.70f, 1.70f, true);
+
+        //Msg
+        toast = new Toast("components/toast.png", meioTelaX - 300, Gdx.graphics.getHeight(), message);
 
         //Buttons
         playButton = PathUtils.image("components/play.png", meioTelaX - 100, meioTelaY, 2, 2, true);
@@ -143,12 +162,17 @@ public class MainMenuScreen implements Screen {
         stage.addActor(optionReturn);
         stage.addActor(registerModal);
         stage.addActor(loginModal.getPanel());
-        stage.addActor(loginModal.getBirthDtp());
-        stage.addActor(loginModal.getCountryEnum());
-        stage.addActor(loginModal.getEmailTxt());
         stage.addActor(loginModal.getLabel());
-        stage.addActor(loginModal.getNicknameTxt());
-        stage.addActor(loginModal.getUsernameTxt());
+        stage.addActor(loginModal.getPasswordTxt());
+        stage.addActor(loginModal.getLabelPasswordTxt());
+        stage.addActor(loginModal.getEmailTxt());
+        stage.addActor(loginModal.getLabelEmailTxt());
+        stage.addActor(loginModal.getCloseButton());
+        stage.addActor(loginModal.getLogin());
+        stage.addActor(loginModal.getLoginLabel());
+        stage.addActor(loginModal.getCadastrar());
+        stage.addActor(toast);
+        stage.addActor(toast.getLabel());
 
         stage.getActors().get(8).setVisible(false);
         stage.getActors().get(9).setVisible(false);
@@ -182,11 +206,14 @@ public class MainMenuScreen implements Screen {
                 }else{
                     loginModal.getPanel().setVisible(true);
                     loginModal.getLabel().setVisible(true);
-                    loginModal.getBirthDtp().setVisible(true);
-                    loginModal.getCountryEnum().setVisible(true);
-                    loginModal.getNicknameTxt().setVisible(true);
+                    loginModal.getPasswordTxt().setVisible(true);
                     loginModal.getEmailTxt().setVisible(true);
-                    loginModal.getUsernameTxt().setVisible(true);
+                    loginModal.getLabelPasswordTxt().setVisible(true);
+                    loginModal.getLabelEmailTxt().setVisible(true);
+                    loginModal.getCloseButton().setVisible(true);
+                    loginModal.getLogin().setVisible(true);
+                    loginModal.getLoginLabel().setVisible(true);
+                    loginModal.getCadastrar().setVisible(true);
                 }
                 return false;
             }
@@ -267,6 +294,59 @@ public class MainMenuScreen implements Screen {
                 Gdx.app.log("Teste","Linguagem selecionada: " + selectBox.getSelected());
             }
         });
+
+        loginModal.getLogin().addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+                User user = new User();
+                user.setEmail(loginModal.getEmailTxt().getText());
+                user.setPassword(loginModal.getPasswordTxt().getText());
+                GdxFIRAuth.instance().signInWithEmailAndPassword(user.getEmail(), user.getPassword().toCharArray(), new AuthCallback() {
+                    @Override
+                    public void onSuccess(GdxFirebaseUser user) {
+                        prefs.putBoolean("User", true).flush();
+                        Gdx.app.log("Info","Usuario: " + user.getUserInfo().getEmail() + " logado: " + prefs.getBoolean("User"));
+                        toast.setFlagStart(true);
+                        message = "Conectado com Sucesso!";
+                        toast.getLabel().setText(message);
+                        loginModal.getCloseButton().setVisible(false);
+                        loginModal.getEmailTxt().setVisible(false);
+                        loginModal.getPasswordTxt().setVisible(false);
+                        loginModal.getCadastrar().setVisible(false);
+                        loginModal.getLabel().setVisible(false);
+                        loginModal.getLabelEmailTxt().setVisible(false);
+                        loginModal.getLabelPasswordTxt().setVisible(false);
+                        loginModal.getLoginLabel().setVisible(false);
+                        loginModal.getLogin().setVisible(false);
+                        loginModal.getPanel().setVisible(false);
+                    }
+
+                    @Override
+                    public void onFail(Exception e) {
+                        Gdx.app.log("Error", e.getMessage());
+                        toast.setFlagStart(true);
+                        message = "Falha ao conectar-se! ";
+                        toast.getLabel().setText(message);
+                        loginModal.getCloseButton().setVisible(false);
+                        loginModal.getEmailTxt().setVisible(false);
+                        loginModal.getPasswordTxt().setVisible(false);
+                        loginModal.getCadastrar().setVisible(false);
+                        loginModal.getLabel().setVisible(false);
+                        loginModal.getLabelEmailTxt().setVisible(false);
+                        loginModal.getLabelPasswordTxt().setVisible(false);
+                        loginModal.getLoginLabel().setVisible(false);
+                        loginModal.getLogin().setVisible(false);
+                        loginModal.getPanel().setVisible(false);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -279,6 +359,20 @@ public class MainMenuScreen implements Screen {
         //Definição apartir do delta
         rotateLogo = 100 * delta;
         speedMenu = 400 * delta;
+
+        //Login
+        if(loginModal.getPasswordInput().getText() != null && !loginModal.getPasswordInput().getText().isEmpty()){
+            loginModal.getPasswordTxt().setText(loginModal.getPasswordInput().getText());
+        }
+        if(loginModal.getEmailInput().getText() != null && !loginModal.getEmailInput().getText().isEmpty()){
+            loginModal.getEmailTxt().setText(loginModal.getEmailInput().getText());
+        }
+
+        //Toast
+        if(toast.getFlagStart()){
+            this.toast.addAction(Actions.sequence(Actions.delay(0.1f), Actions.moveBy(0,-100,0.5f), Actions.delay(2f), Actions.moveBy(0,100,0.5f)));
+            toast.setFlagStart(false);
+        }
 
         //Efeito de transição do menu
         stage.getActors().get(0).moveBy(speedMenu, menu.getY());

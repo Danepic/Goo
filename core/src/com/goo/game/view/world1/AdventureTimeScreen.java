@@ -139,7 +139,7 @@ public class AdventureTimeScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
 
-        if(finn.getState() == StateType.STANCE && finn.getX() >= 988 && attempts.currentAttempt <= 3){
+        if(finn.getState() == StateType.STANCE && finn.getX() >= 950 && attempts.currentAttempt <= 3){
             resultPanel.getPanel().setVisible(true);
             resultPanel.getLabel().setVisible(true);
             resultPanel.getSuccess().setVisible(true);
@@ -152,7 +152,7 @@ public class AdventureTimeScreen implements Screen {
             resultPanel.starsResult(attempts.currentAttempt);
         }
 
-        if(attempts.currentAttempt > 3 && finn.getX() < 988){
+        if(attempts.currentAttempt > 3 && finn.getX() < 950){
             resultPanel.getPanel().setVisible(true);
             resultPanel.getLabel().setVisible(true);
             resultPanel.getFailed().setVisible(true);
@@ -165,7 +165,7 @@ public class AdventureTimeScreen implements Screen {
         }
 
         if(valueVar > 0 && finn.getState() == StateType.STANCE && attempts.currentAttempt <= 3){
-            if(finn.getX() < 988){
+            if(finn.getX() < 950){
                 valueVar--;
                 finn.setState(StateType.JUMP);
             }

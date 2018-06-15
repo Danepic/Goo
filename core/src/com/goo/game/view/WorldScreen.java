@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.goo.game.components.Logout;
 import com.goo.game.enums.PhaseType;
 import com.goo.game.utils.PathUtils;
 import com.goo.game.view.world1.AdventureTimeScreen;
@@ -36,6 +37,8 @@ public class WorldScreen implements Screen {
     private Stage stage;
 
     private Image bg;
+
+    private Logout logout;
 
     private Image tutorialWorld;
     private Image tutorialWorldPhase1;
@@ -86,6 +89,8 @@ public class WorldScreen implements Screen {
         //Batch
         batch = new SpriteBatch();
 
+        logout = new Logout(game);
+
         //VarNumeric Utils
         posFinalX = Gdx.graphics.getWidth();
         posFinalY = Gdx.graphics.getWidth();
@@ -97,35 +102,35 @@ public class WorldScreen implements Screen {
         bg = PathUtils.image("components/worldScreen.png", 0, 0, 1.90f, 1.75f, false);
         tutorialWorld = PathUtils.image("components/worlds/tutorial.png", meioTelaX, meioTelaY, 1, 1, true);
 
-        tutorialWorldPhase1 = PathUtils.image("components/worlds/phaseOne.png", 250, meioTelaY + 150, 0.75f, 0.75f, true);
+        tutorialWorldPhase1 = PathUtils.image("components/worlds/phaseOne.png", 250, meioTelaY + 50, 0.75f, 0.75f, true);
         tutorialWorldPhase1.setVisible(false);
         tutorialWorldPhase1.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase2 = PathUtils.image("components/worlds/phaseTwo.png", 500, meioTelaY + 150, 0.75f, 0.75f, true);
+        tutorialWorldPhase2 = PathUtils.image("components/worlds/phaseTwo.png", 500, meioTelaY + 50, 0.75f, 0.75f, true);
         tutorialWorldPhase2.setVisible(false);
         tutorialWorldPhase2.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase3 = PathUtils.image("components/worlds/phaseThree.png", 750, meioTelaY + 150, 0.75f, 0.75f, true);
+        tutorialWorldPhase3 = PathUtils.image("components/worlds/phaseThree.png", 750, meioTelaY + 50, 0.75f, 0.75f, true);
         tutorialWorldPhase3.setVisible(false);
         tutorialWorldPhase3.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase4 = PathUtils.image("components/worlds/phaseFour.png", 1000, meioTelaY + 150, 0.75f, 0.75f, true);
+        tutorialWorldPhase4 = PathUtils.image("components/worlds/phaseFour.png", 1000, meioTelaY + 50, 0.75f, 0.75f, true);
         tutorialWorldPhase4.setVisible(false);
         tutorialWorldPhase4.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase5 = PathUtils.image("components/worlds/phaseFive.png", 250, meioTelaY - 50, 0.75f, 0.75f, true);
+        tutorialWorldPhase5 = PathUtils.image("components/worlds/phaseFive.png", 250, meioTelaY - 150, 0.75f, 0.75f, true);
         tutorialWorldPhase5.setVisible(false);
         tutorialWorldPhase5.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase6 = PathUtils.image("components/worlds/phaseSix.png", 500, meioTelaY - 50, 0.75f, 0.75f, true);
+        tutorialWorldPhase6 = PathUtils.image("components/worlds/phaseSix.png", 500, meioTelaY - 150, 0.75f, 0.75f, true);
         tutorialWorldPhase6.setVisible(false);
         tutorialWorldPhase6.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase7 = PathUtils.image("components/worlds/phaseSeven.png", 750, meioTelaY - 50, 0.75f, 0.75f, true);
+        tutorialWorldPhase7 = PathUtils.image("components/worlds/phaseSeven.png", 750, meioTelaY - 150, 0.75f, 0.75f, true);
         tutorialWorldPhase7.setVisible(false);
         tutorialWorldPhase7.setColor(Color.DARK_GRAY);
 
-        tutorialWorldPhase8 = PathUtils.image("components/worlds/phaseEight.png", 1000, meioTelaY - 50, 0.75f, 0.75f, true);
+        tutorialWorldPhase8 = PathUtils.image("components/worlds/phaseEight.png", 1000, meioTelaY - 150, 0.75f, 0.75f, true);
         tutorialWorldPhase8.setVisible(false);
         tutorialWorldPhase8.setColor(Color.DARK_GRAY);
 
@@ -201,6 +206,7 @@ public class WorldScreen implements Screen {
         stage.addActor(tutorialWorldPhase6);
         stage.addActor(tutorialWorldPhase7);
         stage.addActor(tutorialWorldPhase8);
+        stage.addActor(logout.getImage());
 
         Gdx.input.setInputProcessor(stage);
 
